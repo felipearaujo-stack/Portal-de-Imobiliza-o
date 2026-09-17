@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal de Imobilização de Equipamentos Eletrônicos | Magalu</title>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --magalu-blue: #0086ff;
+      --magalu-dark: #0060c7;
+      --magalu-bg: #f4f6f9;
+      --card-bg: #ffffff;
+      --text-main: #2c3e50;
+      --text-muted: #7f8c8d;
+      --border-color: #e2e8f0;
+      --success: #00b894;
+      --danger: #ef4444;
+      --danger-hover: #dc2626;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Open Sans', sans-serif; }
+    body { background: var(--magalu-bg); color: var(--text-main); min-height: 100vh; }
+
+    /* CABEÇALHO DA APLICAÇÃO */
+    .app-header {
+      background: var(--magalu-blue);
+      color: #fff;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .brand { font-size: 18px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+
+    .user-info { display: flex; align-items: center; gap: 15px; font-size: 13px; font-weight: 600; }
+    .btn-login-trigger {
+      background: #ffffff;
+      color: var(--magalu-blue);
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .btn-login-trigger:hover { background: #f1f5f9; }
+
+    .btn-logout { background: rgba(255,255,255,0.2); color: #fff; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; }
+    .btn-logout:hover { background: rgba(255,255,255,0.3); }
+
+    /* BOTÃO DE SOLICITAÇÃO */
+    .btn-solicitar-empresa {
+      background: #ff007f;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 10px rgba(255, 0, 127, 0.3);
+    }
+    .btn-solicitar-empresa:hover {
+      background: #e00070;
+      transform: translateY(-1px);
+    }
+
+    /* CONTAINERS E CARDS */
+    .main-container { max-width: 1100px; margin: 30px auto; padding: 0 20px; }
+    .card { background: var(--card-bg); border-radius: 8px; border: 1px solid var(--border-color); padding: 25px; margin-bottom: 25px; box-shadow: 0 2px 5px rgba(0,0,0,0.03); }
+    .card-title { font-size: 16px; font-weight: 700; color: var(--magalu-blue); margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; }
+
+    /* FORMULÁRIOS */
+    .form-row { display: flex; gap: 15px; margin-bottom: 15px; }
+    .form-row .form-group { flex: 1; }
+    .form-group { text-align: left; margin-bottom: 15px; }
+    label { display: block; font-size: 12px; font-weight: 700; color: var(--text-main); margin-bottom: 5px; text-transform: uppercase; }
+    input, textarea, select { width: 100%; background: #f8fafc; border: 1px solid var(--border-color); padding: 12px; border-radius: 6px; font-size: 14px; color: var(--text-main); outline: none; transition: 0.2s; }
+    input:focus, textarea:focus, select:focus { border-color: var(--magalu-blue); background: #fff; }
+    
+    .btn-magalu { width: 100%; background: var(--magalu-blue); color: #fff; border: none; padding: 14px; border-radius: 6px; font-size: 15px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+    .btn-magalu:hover { background: var(--magalu-dark); }
+
+    /* LISTAGEM DE SOLICITAÇÕES */
+    .top-actions { display: flex; justify-content: flex-end; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
+    .btn-secondary { background: #fff; border: 1px solid var(--border-color); color: var(--text-main); padding: 8px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; }
+    .btn-secondary:hover { background: #f8fafc; }
+    .btn-csv { background: #10b981; color: #fff; border: none; padding: 8px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; }
+    .btn-csv:hover { background: #059669; }
+    .btn-danger { background: var(--danger); color: #fff; border: none; padding: 8px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; }
+    .btn-danger:hover { background: var(--danger-hover); }
+
+    .item-row { background: #fff; border: 1px solid var(--border-color); border-left: 5px solid var(--magalu-blue); padding: 18px; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+    .item-row.highlight { animation: pulseHighlight 2s ease-out; }
+    @keyframes pulseHighlight {
+      0% { border-left-color: var(--success); background-color: #e6fffa; }
+      100% { border-left-color: var(--magalu-blue); background-color: #fff; }
+    }
+
+    .status-badge { display: inline-block; padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; background: #e0f2fe; color: #0369a1; }
+    .info-tag { display: inline-block; background: #f1f5f9; border: 1px solid #cbd5e1; padding: 3px 10px; border-radius: 4px; font-weight: 600; font-size: 11px; color: #334155; margin-right: 5px; }
+
+    .actions { margin-top: 15px; display: flex; gap: 8px; flex-wrap: wrap; padding-top: 10px; border-top: 1px dashed var(--border-color); }
+    .btn-action { background: #f1f5f9; color: var(--text-main); font-size: 12px; font-weight: 600; padding: 8px 14px; border-radius: 4px; border: 1px solid var(--border-color); cursor: pointer; transition: 0.2s; }
+    .btn-action:hover { background: var(--magalu-blue); color: #fff; border-color: var(--magalu-blue); }
+
+    /* ESTRUTURA DOS MODAIS */
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px); z-index: 1000; justify-content: center; align-items: center; }
+    .modal-card { background: #fff; width: 100%; max-width: 550px; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); position: relative; max-height: 90vh; overflow-y: auto; }
+    .modal-close { position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 18px; color: var(--text-muted); cursor: pointer; }
+  </style>
+</head>
+<body>
+
+  <!-- CABEÇALHO GLOBAL -->
+  <header class="app-header">
+    <div class="brand">
+      <i class="fas fa-laptop-house"></i> magalu | Portal de Imobilização
+    </div>
+
+    <!-- ÁREA DE LOGIN RESTO NO CABEÇALHO -->
+    <div id="authArea">
+      <button class="btn-login-trigger" onclick="abrirModalLogin()">
+        <i class="fas fa-lock"></i> Área Restrita / Gestão
+      </button>
+    </div>
+  </header>
+
+  <div class="main-container">
+
+    <!-- DASHBOARD DE CONSULTA PÚBLICA -->
+    <div class="top-actions">
+      <button id="btnExportarCSV" class="btn-csv" style="display: none;" onclick="exportarCSV()"><i class="fas fa-file-excel"></i> Exportar p/ Excel (CSV)</button>
+      <button id="btnZerarBanco" class="btn-danger" style="display: none;" onclick="zerarBanco()"><i class="fas fa-trash-alt"></i> Limpar Banco de Dados</button>
+      <button class="btn-secondary" onclick="exportarJSON()"><i class="fas fa-download"></i> Exportar JSON</button>
+      <button class="btn-secondary" id="btnImportarJSON" style="display: none;" onclick="document.getElementById('fileInput').click()"><i class="fas fa-upload"></i> Importar JSON</button>
+      <input type="file" id="fileInput" accept=".json" style="display: none;" onchange="importarJSON(event)" />
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <span><i class="fas fa-tasks"></i> Dashboard de Acompanhamento das Imobilizações</span>
+        
+        <!-- BOTÃO DE SOLICITAÇÃO LIVRE -->
+        <button class="btn-solicitar-empresa" onclick="abrirFormularioSolicitacao()">
+          <i class="fas fa-plus-circle"></i> Nova Solicitação de Aparelho
+        </button>
+      </div>
+      
+      <div id="lista-chamados">Carregando solicitações...</div>
+    </div>
+
+  </div>
+
+  <!-- MODAL: FORMULÁRIO DE SOLICITAÇÃO DIRETA (LIVRE DE LOGIN) -->
+  <div id="modalSolicitacao" class="modal-overlay">
+    <div class="modal-card">
+      <button class="modal-close" onclick="fecharModalSolicitacao()"><i class="fas fa-times"></i></button>
+      <h3 style="color: var(--magalu-blue); margin-bottom: 5px;"><i class="fas fa-mobile-alt"></i> Nova Solicitação de Aparelho</h3>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">Preencha os dados do equipamento para abertura do chamado no Dashboard.</p>
+      
+      <form onsubmit="enviarSolicitacao(event)">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Solicitante / Responsável *</label>
+            <input type="text" id="solicitante" placeholder="Ex: João Silva - Supervisor" required />
+          </div>
+          <div class="form-group">
+            <label>Setor / Centro de Custo *</label>
+            <input type="text" id="setor" placeholder="Ex: CD300 - Expedição / DQS" required />
+          </div>
+        </div>
+
+        <!-- DESCRIÇÃO DO ITEM -->
+        <div class="form-group">
+          <label>Descrição do Item / Aparelho *</label>
+          <input type="text" id="descricaoItem" placeholder="Ex: Coletor Zebra TC21 / Smartphone Samsung A14 / Tablet Tab A8" required />
+        </div>
+
+        <div class="form-row">
+          <!-- QUANTIDADE -->
+          <div class="form-group">
+            <label>Quantidade *</label>
+            <input type="number" id="quantidade" min="1" value="1" required />
+          </div>
+
+          <div class="form-group">
+            <label>Categoria do Motivo *</label>
+            <select id="motivoCategoria" required>
+              <option value="Novo Colaborador / Expansão">Novo Colaborador / Expansão</option>
+              <option value="Substituição por Quebra / Avaria">Substituição por Quebra / Avaria</option>
+              <option value="Projetos / Novos Processos">Projetos / Novos Processos</option>
+              <option value="Outros Motivos Operacionais">Outros Motivos Operacionais</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- MOTIVO CLARO DA SOLICITAÇÃO -->
+        <div class="form-group">
+          <label>Motivo Claro da Solicitação (Justificativa) *</label>
+          <textarea id="motivoClaro" rows="3" placeholder="Explique claramente o motivo (Ex: Aumento da demanda no 3º turno exigindo coletores extras)." required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Softwares, Perfis e Observações Adicionais</label>
+          <textarea id="observacoes" rows="2" placeholder="Ex: Necessário WMS, Teams e perfil liberado."></textarea>
+        </div>
+
+        <button type="submit" class="btn-magalu">
+          <i class="fas fa-paper-plane"></i> Finalizar & Enviar Solicitação
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: LOGIN DE GESTÃO (DQS, CTE, CSC, ADMIN) -->
+  <div id="modalLogin" class="modal-overlay">
+    <div class="modal-card" style="max-width: 400px; text-align: center;">
+      <button class="modal-close" onclick="fecharModalLogin()"><i class="fas fa-times"></i></button>
+      <h3 style="color: var(--magalu-blue); margin-bottom: 5px;">magalu.</h3>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">Acesso Restrito às Equipes de Gestão do Fluxo</p>
+      
+      <form onsubmit="autenticar(event)">
+        <div class="form-group">
+          <label>E-mail Corporativo</label>
+          <input type="email" id="loginEmail" placeholder="seu.setor@magazineluiza.com.br" required />
+        </div>
+        <div class="form-group">
+          <label>Senha de Acesso</label>
+          <input type="password" id="loginSenha" placeholder="••••••••" required />
+        </div>
+        <button type="submit" class="btn-magalu" style="padding: 12px;"><i class="fas fa-sign-in-alt"></i> Entrar</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const DB_KEY = 'chamados_imobilizacao_db';
+    let usuarioLogado = null;
+    let ultimoIdInserido = null;
+
+    const usuarios = [
+      { email: 'admin@magazineluiza.com.br', senha: 'admin123', perfil: 'admin', nome: 'Administrador TI' },
+      { email: 'dqs@magazineluiza.com.br', senha: 'dqs123', perfil: 'dqs', nome: 'Equipe DQS' },
+      { email: 'cte@magazineluiza.com.br', senha: 'cte123', perfil: 'cte', nome: 'Estoque / CTE' },
+      { email: 'csc@magazineluiza.com.br', senha: 'csc123', perfil: 'csc', nome: 'Central CSC' }
+    ];
+
+    window.onload = function() {
+      carregarChamados();
+    };
+
+    function abrirFormularioSolicitacao() {
+      document.getElementById('modalSolicitacao').style.display = 'flex';
+    }
+
+    function fecharModalSolicitacao() {
+      document.getElementById('modalSolicitacao').style.display = 'none';
+    }
+
+    function abrirModalLogin() {
+      document.getElementById('modalLogin').style.display = 'flex';
+    }
+
+    function fecharModalLogin() {
+      document.getElementById('modalLogin').style.display = 'none';
+    }
+
+    function autenticar(e) {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value.trim();
+      const senha = document.getElementById('loginSenha').value.trim();
+
+      const user = usuarios.find(u => u.email.toLowerCase() === email.toLowerCase() && u.senha === senha);
+
+      if (user) {
+        iniciarSessao(user);
+        fecharModalLogin();
+      } else {
+        alert('Credenciais inválidas! Verifique e tente novamente.');
+      }
+    }
+
+    function iniciarSessao(user) {
+      usuarioLogado = user;
+
+      const authArea = document.getElementById('authArea');
+      authArea.innerHTML = `
+        <div class="user-info">
+          <span><i class="fas fa-user-circle"></i> ${user.nome} (<strong>${user.perfil.toUpperCase()}</strong>)</span>
+          <button class="btn-logout" onclick="logout()"><i class="fas fa-power-off"></i> Sair</button>
+        </div>
+      `;
+
+      if (user.perfil === 'admin') {
+        document.getElementById('btnExportarCSV').style.display = 'inline-block';
+        document.getElementById('btnZerarBanco').style.display = 'inline-block';
+        document.getElementById('btnImportarJSON').style.display = 'inline-block';
+      }
+
+      carregarChamados();
+    }
+
+    function logout() {
+      usuarioLogado = null;
+
+      document.getElementById('authArea').innerHTML = `
+        <button class="btn-login-trigger" onclick="abrirModalLogin()">
+          <i class="fas fa-lock"></i> Área Restrita / Gestão
+        </button>
+      `;
+
+      document.getElementById('btnExportarCSV').style.display = 'none';
+      document.getElementById('btnZerarBanco').style.display = 'none';
+      document.getElementById('btnImportarJSON').style.display = 'none';
+
+      carregarChamados();
+    }
+
+    function lerBanco() {
+      const data = localStorage.getItem(DB_KEY);
+      return data ? JSON.parse(data) : [];
+    }
+
+    function salvarBanco(dados) {
+      localStorage.setItem(DB_KEY, JSON.stringify(dados));
+    }
+
+    function enviarSolicitacao(e) {
+      e.preventDefault();
+
+      const solicitante = document.getElementById('solicitante').value.trim();
+      const setor = document.getElementById('setor').value.trim();
+      const descricaoItem = document.getElementById('descricaoItem').value.trim();
+      const quantidade = document.getElementById('quantidade').value;
+      const motivoCategoria = document.getElementById('motivoCategoria').value;
+      const motivoClaro = document.getElementById('motivoClaro').value.trim();
+      const observacoes = document.getElementById('observacoes').value.trim();
+
+      if (!solicitante || !setor || !descricaoItem || !quantidade || !motivoClaro) {
+        return alert("Preencha todos os campos obrigatórios (*)");
+      }
+
+      const banco = lerBanco();
+      const novoId = "IMO-" + Math.floor(100000 + Math.random() * 900000);
+
+      const novoChamado = {
+        id: novoId,
+        dataAbertura: new Date().toLocaleString('pt-BR'),
+        solicitante,
+        setor,
+        descricaoItem,
+        quantidade,
+        motivoCategoria,
+        motivoClaro,
+        observacoes,
+        status: "1. Solicitação Criada (Aguardando Análise DQS)",
+        listaDQS: "",
+        aparelhosEscolhidos: "",
+        numPedido: "",
+        atualizadoPor: usuarioLogado ? usuarioLogado.nome : solicitante
+      };
+
+      banco.unshift(novoChamado);
+      salvarBanco(banco);
+
+      ultimoIdInserido = novoId;
+
+      // Limpa os campos
+      document.getElementById('solicitante').value = '';
+      document.getElementById('setor').value = '';
+      document.getElementById('descricaoItem').value = '';
+      document.getElementById('motivoClaro').value = '';
+      document.getElementById('observacoes').value = '';
+
+      fecharModalSolicitacao();
+      alert(`✅ Solicitação ${novoId} aberta com sucesso!`);
+      carregarChamados();
+    }
+
+    function carregarChamados() {
+      const lista = lerBanco();
+      renderizar(lista);
+    }
+
+    function renderizar(lista) {
+      const cont = document.getElementById('lista-chamados');
+      cont.innerHTML = '';
+
+      if (lista.length === 0) {
+        cont.innerHTML = '<p style="color: var(--text-muted); font-size: 13px;">Nenhuma solicitação cadastrada no momento.</p>';
+        return;
+      }
+
+      lista.forEach(item => {
+        const row = document.createElement('div');
+        row.className = 'item-row' + (item.id === ultimoIdInserido ? ' highlight' : '');
+        row.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong>${item.id} - ${item.solicitante} (${item.setor || 'Geral'})</strong>
+            <span class="status-badge">${item.status}</span>
+          </div>
+          <p style="font-size: 12px; color: var(--text-muted); margin-top: 8px;">
+            <span class="info-tag">Item: ${item.descricaoItem || 'Não especificado'}</span>
+            <span class="info-tag">Qtd: ${item.quantidade || '1'} UN</span>
+            <span class="info-tag">Categoria: ${item.motivoCategoria || 'Operacional'}</span>
+          </p>
+          <p style="font-size: 12px; color: #334155; margin-top: 6px;"><strong>Motivo Claro:</strong> ${item.motivoClaro || 'Não informado'}</p>
+          ${item.observacoes ? `<p style="font-size: 11px; color: #64748b; margin-top: 4px;"><strong>Softwares/Obs:</strong> ${item.observacoes}</p>` : ''}
+          ${item.listaDQS ? `<p style="font-size: 11px; color: #0284c7; margin-top:4px;"><strong>Disp. DQS:</strong> ${item.listaDQS}</p>` : ''}
+          ${item.aparelhosEscolhidos ? `<p style="font-size: 11px; color: #16a34a; margin-top:4px;"><strong>Escolhidos:</strong> ${item.aparelhosEscolhidos}</p>` : ''}
+          ${item.numPedido ? `<p style="font-size: 11px; color: #d97706; margin-top:4px;"><strong>Nº Pedido BAAP:</strong> ${item.numPedido}</p>` : ''}
+          
+          <div class="actions">
+            ${obterBotoesAcao(item)}
+          </div>
+        `;
+        cont.appendChild(row);
+      });
+    }
+
+    function obterBotoesAcao(item) {
+      if (!usuarioLogado) return '';
+
+      let html = '';
+      const st = item.status;
+      const perf = usuarioLogado.perfil;
+
+      if (perf === 'dqs' || perf === 'admin') {
+        if (st.startsWith("1.")) html += `<button class="btn-action" onclick="avancar('${item.id}', '2. Solicitação Recebida (Verificando Estoque)')">DQS: Confirmar Recebimento</button>`;
+        else if (st.startsWith("2.")) html += `<button class="btn-action" onclick="enviarListaDQS('${item.id}')">DQS: Informar Itens Disponíveis</button>`;
+        else if (st.startsWith("3.") && perf === 'admin') html += `<button class="btn-action" onclick="selecionarAparelhos('${item.id}')">Solicitante: Escolher Aparelhos</button>`;
+        else if (st.startsWith("4.")) html += `<button class="btn-action" onclick="avancar('${item.id}', '5. Transferência de Saldo Confirmada ao Estoque')">DQS: Confirmar Transf. Saldo</button>`;
+        else if (st.startsWith("10.") && perf === 'admin') html += `<button class="btn-action" onclick="avancar('${item.id}', '11. Retirado pelo T.I. (Em Configuração)')">T.I.: Confirmar Retirada & Iniciar Config.</button>`;
+        else if (st.startsWith("11.") && perf === 'admin') html += `<button class="btn-action" onclick="avancar('${item.id}', '12. Configurado (Disponível para Retirada Final)')">T.I.: Finalizar Configuração</button>`;
+      }
+
+      if (perf === 'cte' || perf === 'admin') {
+        if (st.startsWith("5.")) html += `<button class="btn-action" onclick="avancar('${item.id}', '6. Saldo Recebido & Aberta Solicitação no BAAP')">CTE: Saldo Recebido & Abrir BAAP</button>`;
+        else if (st.startsWith("8.")) html += `<button class="btn-action" onclick="avancar('${item.id}', '9. Pedido Recebido (Em Processo de Faturamento)')">CTE: Confirmar Pedido Recebido</button>`;
+        else if (st.startsWith("9.")) html += `<button class="btn-action" onclick="avancar('${item.id}', '10. Pedido Faturado (Disponível p/ Retirada no DQS pelo T.I.)')">CTE: Confirmar Faturamento</button>`;
+      }
+
+      if (perf === 'csc' || perf === 'admin') {
+        if (st.startsWith("6.")) html += `<button class="btn-action" onclick="avancar('${item.id}', '7. Solicitação Recebida (Gerando Pedido)')">CSC: Confirmar Recebimento</button>`;
+        else if (st.startsWith("7.")) html += `<button class="btn-action" onclick="informarPedidoCSC('${item.id}')">CSC: Enviar Pedido Gerado</button>`;
+      }
+
+      return html;
+    }
+
+    function atualizarStatus(id, novoStatus, campoExtra = '', valorExtra = '') {
+      const banco = lerBanco();
+      const item = banco.find(x => x.id === id);
+      if (item) {
+        item.status = novoStatus;
+        item.atualizadoPor = usuarioLogado.nome;
+        if (campoExtra && valorExtra) item[campoExtra] = valorExtra;
+        salvarBanco(banco);
+        carregarChamados();
+      }
+    }
+
+    function avancar(id, proximoStatus) {
+      atualizarStatus(id, proximoStatus);
+    }
+
+    function enviarListaDQS(id) {
+      const texto = prompt("DQS: Liste os equipamentos/informações disponíveis:");
+      if (texto) atualizarStatus(id, "3. Lista de Disponibilidade Enviada pelo DQS", "listaDQS", texto);
+    }
+
+    function selecionarAparelhos(id) {
+      const texto = prompt("Solicitante: Digite os equipamentos de interesse escolhidos:");
+      if (texto) atualizarStatus(id, "4. Itens de Interesse Selecionados pela Área", "aparelhosEscolhidos", texto);
+    }
+
+    function informarPedidoCSC(id) {
+      const texto = prompt("CSC: Digite o Número do Pedido/BAAP Gerado:");
+      if (texto) atualizarStatus(id, "8. Pedido Emitido pelo CSC", "numPedido", texto);
+    }
+
+    function zerarBanco() {
+      if (usuarioLogado.perfil !== 'admin') return alert("Apenas o Administrador pode executar esta ação.");
+      if (confirm("⚠️ ATENÇÃO: Deseja REALMENTE apagar TODOS os chamados cadastrados?")) {
+        localStorage.removeItem(DB_KEY);
+        carregarChamados();
+        alert("O banco de dados foi completamente zerado!");
+      }
+    }
+
+    function exportarCSV() {
+      const banco = lerBanco();
+      if (banco.length === 0) return alert("Não há solicitações para exportar.");
+
+      let csv = "\uFEFF";
+      csv += "ID;Data Abertura;Solicitante;Setor;Descrição do Item;Quantidade;Categoria Motivo;Motivo Claro;Softwares/Obs;Status Atual;Disponibilidade DQS;Equipamentos Escolhidos;Nº Pedido BAAP;Última Atualização Por\n";
+
+      banco.forEach(item => {
+        csv += `"${item.id}";"${item.dataAbertura}";"${item.solicitante}";"${item.setor}";"${item.descricaoItem}";"${item.quantidade}";"${item.motivoCategoria}";"${item.motivoClaro}";"${item.observacoes}";"${item.status}";"${item.listaDQS}";"${item.aparelhosEscolhidos}";"${item.numPedido}";"${item.atualizadoPor}"\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `imobilizacoes_magalu_${new Date().toISOString().slice(0, 10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function exportarJSON() {
+      const banco = lerBanco();
+      if (banco.length === 0) return alert("Não há chamados cadastrados para exportar.");
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(banco, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `database_imobilizacao_${new Date().toISOString().slice(0,10)}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+    }
+
+    function importarJSON(event) {
+      const fileReader = new FileReader();
+      fileReader.onload = function(e) {
+        try {
+          const dados = JSON.parse(e.target.result);
+          if (Array.isArray(dados)) {
+            salvarBanco(dados);
+            carregarChamados();
+            alert("Banco de Dados importado com sucesso!");
+          } else {
+            alert("O arquivo selecionado não é um JSON válido.");
+          }
+        } catch (err) {
+          alert("Erro ao ler o arquivo JSON.");
+        }
+      };
+      fileReader.readAsText(event.target.files[0]);
+    }
+  </script>
+</body>
+</html>
