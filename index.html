@@ -3,551 +3,753 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Portal de Imobilização de Equipamentos Eletrônicos | Magalu</title>
-  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <title>Portal T.I. | Gestão de Ativos - Imobilização, IMEIs & CDs</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
   <style>
     :root {
-      --magalu-blue: #0086ff;
-      --magalu-dark: #0060c7;
-      --magalu-bg: #f4f6f9;
-      --card-bg: #ffffff;
-      --text-main: #2c3e50;
-      --text-muted: #7f8c8d;
+      --bg-body: #f8fafc;
+      --bg-sidebar: #0f172a;
+      --bg-card: #ffffff;
       --border-color: #e2e8f0;
-      --success: #00b894;
-      --danger: #ef4444;
-      --danger-hover: #dc2626;
+      
+      --brand-blue: #0086ff;
+      --brand-blue-hover: #0060c7;
+      
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --text-white: #ffffff;
+
+      --sidebar-width: 240px;
+      --header-height: 60px;
+      --radius: 8px;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Open Sans', sans-serif; }
-    body { background: var(--magalu-bg); color: var(--text-main); min-height: 100vh; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+    body { background: var(--bg-body); color: var(--text-main); display: flex; min-height: 100vh; overflow-x: hidden; }
 
-    /* CABEÇALHO DA APLICAÇÃO */
-    .app-header {
-      background: var(--magalu-blue);
-      color: #fff;
-      padding: 15px 30px;
+    .app-layout { display: flex; width: 100vw; min-height: 100vh; }
+
+    /* SIDEBAR */
+    .sidebar {
+      width: var(--sidebar-width);
+      background: var(--bg-sidebar);
+      color: var(--text-white);
       display: flex;
-      justify-content: space-between;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+
+    .sidebar-brand {
+      height: var(--header-height);
+      display: flex;
       align-items: center;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-    .brand { font-size: 18px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
-
-    .user-info { display: flex; align-items: center; gap: 15px; font-size: 13px; font-weight: 600; }
-    .btn-login-trigger {
-      background: #ffffff;
-      color: var(--magalu-blue);
-      border: none;
-      padding: 8px 16px;
-      border-radius: 6px;
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-    .btn-login-trigger:hover { background: #f1f5f9; }
-
-    .btn-logout { background: rgba(255,255,255,0.2); color: #fff; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; }
-    .btn-logout:hover { background: rgba(255,255,255,0.3); }
-
-    /* BOTÃO DE SOLICITAÇÃO */
-    .btn-solicitar-empresa {
-      background: #ff007f;
-      color: #fff;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 6px;
-      font-size: 13px;
+      padding: 0 20px;
+      font-size: 15px;
       font-weight: 800;
-      cursor: pointer;
-      transition: 0.2s;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .sidebar-brand span { color: #0086ff; margin-left: 2px; }
+
+    .sidebar-menu { list-style: none; padding: 20px 12px; flex: 1; }
+    .sidebar-item { margin-bottom: 4px; }
+    .sidebar-link {
       display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      color: #94a3b8;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: var(--radius);
+      transition: all 0.2s ease;
+    }
+
+    .sidebar-link:hover { color: #fff; background: rgba(255, 255, 255, 0.05); }
+    .sidebar-link.active { color: #fff; background: var(--brand-blue); }
+    .sidebar-link i { font-size: 15px; width: 18px; text-align: center; }
+
+    /* HEADER */
+    .content-wrapper { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+    .top-header {
+      height: var(--header-height);
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 30px;
+    }
+
+    .top-header-title { font-size: 14px; font-weight: 700; }
+
+    /* MAIN */
+    .main-content { padding: 30px; flex: 1; max-width: 1400px; margin: 0 auto; width: 100%; }
+    .page-title { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
+    .page-subtitle { font-size: 13px; color: var(--text-muted); margin-top: 4px; margin-bottom: 25px; }
+
+    /* TOOLBAR */
+    .toolbar-section { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+    .search-box { flex: 1; max-width: 380px; position: relative; }
+    .search-box i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 14px; }
+    .search-input {
+      width: 100%;
+      padding: 10px 14px 10px 38px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      font-size: 13px;
+      outline: none;
+    }
+
+    .filter-select {
+      padding: 9px 12px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-main);
+      outline: none;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: var(--brand-blue);
+      color: var(--text-white);
+      border: none;
+      padding: 10px 18px;
+      border-radius: var(--radius);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
       align-items: center;
       gap: 8px;
-      box-shadow: 0 4px 10px rgba(255, 0, 127, 0.3);
     }
-    .btn-solicitar-empresa:hover {
-      background: #e00070;
-      transform: translateY(-1px);
+    .btn-primary:hover { background: var(--brand-blue-hover); }
+
+    .btn-logout {
+      background: #fee2e2;
+      color: #b91c1c;
+      border: 1px solid #fca5a5;
+      padding: 6px 12px;
+      border-radius: var(--radius);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-left: 10px;
+    }
+    .btn-logout:hover { background: #fca5a5; }
+
+    /* TABELA */
+    .table-container { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius); overflow: hidden; }
+    .enterprise-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; }
+    .enterprise-table th { background: #f8fafc; padding: 14px 16px; font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; border-bottom: 1px solid var(--border-color); }
+    .enterprise-table td { padding: 14px 16px; border-bottom: 1px solid var(--border-color); vertical-align: middle; }
+    .enterprise-table tbody tr:hover { background: #f8fafc; }
+
+    /* BADGES */
+    .badge-vpn-ativa { background: #dcfce7; color: #15803d; padding: 4px 10px; border-radius: 20px; font-weight: 700; font-size: 11px; display: inline-flex; align-items: center; gap: 4px; }
+    .badge-vpn-inativa { background: #fee2e2; color: #b91c1c; padding: 4px 10px; border-radius: 20px; font-weight: 700; font-size: 11px; display: inline-flex; align-items: center; gap: 4px; }
+    .badge-cd { background: #f3e8ff; color: #6b21a8; padding: 4px 10px; border-radius: 20px; font-weight: 700; font-size: 11px; }
+
+    /* MODAL */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.5);
+      backdrop-filter: blur(2px);
+      z-index: 300;
+      justify-content: center;
+      align-items: center;
     }
 
-    /* CONTAINERS E CARDS */
-    .main-container { max-width: 1100px; margin: 30px auto; padding: 0 20px; }
-    .card { background: var(--card-bg); border-radius: 8px; border: 1px solid var(--border-color); padding: 25px; margin-bottom: 25px; box-shadow: 0 2px 5px rgba(0,0,0,0.03); }
-    .card-title { font-size: 16px; font-weight: 700; color: var(--magalu-blue); margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; }
-
-    /* FORMULÁRIOS */
-    .form-row { display: flex; gap: 15px; margin-bottom: 15px; }
-    .form-row .form-group { flex: 1; }
-    .form-group { text-align: left; margin-bottom: 15px; }
-    label { display: block; font-size: 12px; font-weight: 700; color: var(--text-main); margin-bottom: 5px; text-transform: uppercase; }
-    input, textarea, select { width: 100%; background: #f8fafc; border: 1px solid var(--border-color); padding: 12px; border-radius: 6px; font-size: 14px; color: var(--text-main); outline: none; transition: 0.2s; }
-    input:focus, textarea:focus, select:focus { border-color: var(--magalu-blue); background: #fff; }
-    
-    .btn-magalu { width: 100%; background: var(--magalu-blue); color: #fff; border: none; padding: 14px; border-radius: 6px; font-size: 15px; font-weight: 700; cursor: pointer; transition: 0.2s; }
-    .btn-magalu:hover { background: var(--magalu-dark); }
-
-    /* LISTAGEM DE SOLICITAÇÕES */
-    .top-actions { display: flex; justify-content: flex-end; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
-    .btn-secondary { background: #fff; border: 1px solid var(--border-color); color: var(--text-main); padding: 8px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; }
-    .btn-secondary:hover { background: #f8fafc; }
-    .btn-csv { background: #10b981; color: #fff; border: none; padding: 8px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; }
-    .btn-csv:hover { background: #059669; }
-    .btn-danger { background: var(--danger); color: #fff; border: none; padding: 8px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; }
-    .btn-danger:hover { background: var(--danger-hover); }
-
-    .item-row { background: #fff; border: 1px solid var(--border-color); border-left: 5px solid var(--magalu-blue); padding: 18px; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-    .item-row.highlight { animation: pulseHighlight 2s ease-out; }
-    @keyframes pulseHighlight {
-      0% { border-left-color: var(--success); background-color: #e6fffa; }
-      100% { border-left-color: var(--magalu-blue); background-color: #fff; }
+    .modal-card {
+      background: var(--bg-card);
+      width: 100%;
+      max-width: 640px;
+      padding: 28px;
+      border-radius: 12px;
+      position: relative;
     }
 
-    .status-badge { display: inline-block; padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; background: #e0f2fe; color: #0369a1; }
-    .info-tag { display: inline-block; background: #f1f5f9; border: 1px solid #cbd5e1; padding: 3px 10px; border-radius: 4px; font-weight: 600; font-size: 11px; color: #334155; margin-right: 5px; }
+    .modal-close { position: absolute; top: 18px; right: 18px; background: none; border: none; font-size: 18px; color: var(--text-muted); cursor: pointer; }
+    .form-group { margin-bottom: 16px; text-align: left; }
+    .form-group label { display: block; font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; }
+    .form-group input, .form-group select { width: 100%; padding: 10px 12px; background: #f8fafc; border: 1px solid var(--border-color); border-radius: var(--radius); font-size: 13px; outline: none; }
 
-    .actions { margin-top: 15px; display: flex; gap: 8px; flex-wrap: wrap; padding-top: 10px; border-top: 1px dashed var(--border-color); }
-    .btn-action { background: #f1f5f9; color: var(--text-main); font-size: 12px; font-weight: 600; padding: 8px 14px; border-radius: 4px; border: 1px solid var(--border-color); cursor: pointer; transition: 0.2s; }
-    .btn-action:hover { background: var(--magalu-blue); color: #fff; border-color: var(--magalu-blue); }
-
-    /* ESTRUTURA DOS MODAIS */
-    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px); z-index: 1000; justify-content: center; align-items: center; }
-    .modal-card { background: #fff; width: 100%; max-width: 550px; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); position: relative; max-height: 90vh; overflow-y: auto; }
-    .modal-close { position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 18px; color: var(--text-muted); cursor: pointer; }
+    .view-pane { display: none; }
+    .view-pane.active { display: block; }
   </style>
 </head>
+
 <body>
 
-  <!-- CABEÇALHO GLOBAL -->
-  <header class="app-header">
-    <div class="brand">
-      <i class="fas fa-laptop-house"></i> magalu | Portal de Imobilização
-    </div>
-
-    <!-- ÁREA DE LOGIN RESTO NO CABEÇALHO -->
-    <div id="authArea">
-      <button class="btn-login-trigger" onclick="abrirModalLogin()">
-        <i class="fas fa-lock"></i> Área Restrita / Gestão
-      </button>
-    </div>
-  </header>
-
-  <div class="main-container">
-
-    <!-- DASHBOARD DE CONSULTA PÚBLICA -->
-    <div class="top-actions">
-      <button id="btnExportarCSV" class="btn-csv" style="display: none;" onclick="exportarCSV()"><i class="fas fa-file-excel"></i> Exportar p/ Excel (CSV)</button>
-      <button id="btnZerarBanco" class="btn-danger" style="display: none;" onclick="zerarBanco()"><i class="fas fa-trash-alt"></i> Limpar Banco de Dados</button>
-      <button class="btn-secondary" onclick="exportarJSON()"><i class="fas fa-download"></i> Exportar JSON</button>
-      <button class="btn-secondary" id="btnImportarJSON" style="display: none;" onclick="document.getElementById('fileInput').click()"><i class="fas fa-upload"></i> Importar JSON</button>
-      <input type="file" id="fileInput" accept=".json" style="display: none;" onchange="importarJSON(event)" />
-    </div>
-
-    <div class="card">
-      <div class="card-title">
-        <span><i class="fas fa-tasks"></i> Dashboard de Acompanhamento das Imobilizações</span>
-        
-        <!-- BOTÃO DE SOLICITAÇÃO LIVRE -->
-        <button class="btn-solicitar-empresa" onclick="abrirFormularioSolicitacao()">
-          <i class="fas fa-plus-circle"></i> Nova Solicitação de Aparelho
-        </button>
+  <div class="app-layout">
+    
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        Portal T.I.<span>.</span>
       </div>
-      
-      <div id="lista-chamados">Carregando solicitações...</div>
-    </div>
+      <ul class="sidebar-menu">
+        <li class="sidebar-item">
+          <a href="#" class="sidebar-link active" id="navPainel" onclick="mudarAba('painel'); return false;">
+            <i class="fas fa-list-check"></i>
+            <span>Painel de Ativos & VPN</span>
+          </a>
+        </li>
+        <li class="sidebar-item">
+          <a href="#" class="sidebar-link" id="navConfig" onclick="mudarAba('config'); return false;">
+            <i class="fas fa-sliders"></i>
+            <span>Configurar CDs</span>
+          </a>
+        </li>
+      </ul>
+    </aside>
 
+    <div class="content-wrapper">
+      
+      <!-- HEADER -->
+      <header class="top-header">
+        <div class="top-header-title">Portal T.I. | Painel de Acompanhamento de Ativos</div>
+        <div id="authStatus">
+          <button class="btn-primary" onclick="abrirModalLogin()"><i class="fas fa-lock"></i> Login T.I.</button>
+        </div>
+      </header>
+
+      <!-- CONTEÚDO PRINCIPAL -->
+      <main class="main-content">
+        
+        <!-- TELA 1: PAINEL DE ACOMPANHAMENTO -->
+        <div id="panePainel" class="view-pane active">
+          <div class="page-title-section">
+            <h1 class="page-title">Painel de Acompanhamento de Dispositivos & VPN</h1>
+            <p class="page-subtitle">Consulta consolidada de IMEI, aparelhos, colaboradores, e-mail VPN, área solicitante, gerente e políticas.</p>
+          </div>
+
+          <div class="toolbar-section">
+            <div class="search-box">
+              <i class="fas fa-search"></i>
+              <input type="text" id="buscaGeral" class="search-input" placeholder="Buscar por Colaborador, IMEI, E-mail VPN, Gerente ou Área..." oninput="carregarPainel()" />
+            </div>
+
+            <!-- FILTRO DINÂMICO POR ÁREA SOLICITANTE -->
+            <select id="filtroAreaSolicitante" class="filter-select" onchange="carregarPainel()">
+              <option value="todos">Todas as Áreas Solicitantes</option>
+            </select>
+
+            <!-- BOTAO DE REGISTRO EXCLUSIVO DO T.I. -->
+            <button class="btn-primary" onclick="abrirModalFormularioTi()"><i class="fas fa-plus"></i> Registrar Ativo (T.I.)</button>
+          </div>
+
+          <div class="table-container">
+            <table class="enterprise-table">
+              <thead>
+                <tr>
+                  <th>IMEI</th>
+                  <th>Modelo Aparelho</th>
+                  <th>Colaborador</th>
+                  <th>E-mail VPN</th>
+                  <th>VPN Ativa?</th>
+                  <th>Área Solicitante</th>
+                  <th>Gerente da Área</th>
+                  <th>Política</th>
+                  <th>CD</th>
+                  <th style="text-align: right;">Ações</th>
+                </tr>
+              </thead>
+              <tbody id="tabelaPainelBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- TELA 2: CONFIGURAÇÃO DE CDs -->
+        <div id="paneConfig" class="view-pane">
+          <div class="page-title-section">
+            <h1 class="page-title">Configuração de Centros de Distribuição (CDs)</h1>
+            <p class="page-subtitle">Gerenciamento de CDs e Localidades corporativas (Acesso Restrito `Admin.T.I`).</p>
+          </div>
+
+          <div class="toolbar-section">
+            <div class="search-box">
+              <i class="fas fa-search"></i>
+              <input type="text" id="buscaCd" class="search-input" placeholder="Buscar por Código do CD ou Localidade..." oninput="carregarCds()" />
+            </div>
+            <button class="btn-primary" onclick="novoCdModal()"><i class="fas fa-plus"></i> Criar Novo CD</button>
+          </div>
+
+          <div class="table-container">
+            <table class="enterprise-table">
+              <thead>
+                <tr>
+                  <th>Código do CD</th>
+                  <th>Localidade / Cidade</th>
+                  <th style="text-align: right;">Ação</th>
+                </tr>
+              </thead>
+              <tbody id="tabelaCdBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </main>
+    </div>
   </div>
 
-  <!-- MODAL: FORMULÁRIO DE SOLICITAÇÃO DIRETA (LIVRE DE LOGIN) -->
-  <div id="modalSolicitacao" class="modal-overlay">
-    <div class="modal-card">
-      <button class="modal-close" onclick="fecharModalSolicitacao()"><i class="fas fa-times"></i></button>
-      <h3 style="color: var(--magalu-blue); margin-bottom: 5px;"><i class="fas fa-mobile-alt"></i> Nova Solicitação de Aparelho</h3>
-      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">Preencha os dados do equipamento para abertura do chamado no Dashboard.</p>
-      
-      <form onsubmit="enviarSolicitacao(event)">
-        <div class="form-row">
-          <div class="form-group">
-            <label>Solicitante / Responsável *</label>
-            <input type="text" id="solicitante" placeholder="Ex: João Silva - Supervisor" required />
-          </div>
-          <div class="form-group">
-            <label>Setor / Centro de Custo *</label>
-            <input type="text" id="setor" placeholder="Ex: CD300 - Expedição / DQS" required />
-          </div>
-        </div>
-
-        <!-- DESCRIÇÃO DO ITEM -->
+  <!-- MODAL DE LOGIN (T.I. UNICO) -->
+  <div id="modalLogin" class="modal-overlay">
+    <div class="modal-card" style="max-width: 360px; text-align: center;">
+      <button class="modal-close" onclick="fecharModal('modalLogin')"><i class="fas fa-times"></i></button>
+      <h2 style="color: var(--brand-blue); margin-bottom: 4px;">Portal T.I.</h2>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;">Autenticação Restrita T.I.</p>
+      <form onsubmit="autenticarTi(event)">
         <div class="form-group">
-          <label>Descrição do Item / Aparelho *</label>
-          <input type="text" id="descricaoItem" placeholder="Ex: Coletor Zebra TC21 / Smartphone Samsung A14 / Tablet Tab A8" required />
+          <label>Usuário / E-mail</label>
+          <input type="text" id="tiUser" placeholder="Admin.T.I" required />
+        </div>
+        <div class="form-group">
+          <label>Senha</label>
+          <input type="password" id="tiPass" placeholder="••••••••" required />
+        </div>
+        <button type="submit" class="btn-primary" style="width: 100%; justify-content: center;">Acessar Painel T.I.</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL FORMULÁRIO EXCLUSIVO DO T.I. -->
+  <div id="modalFormTi" class="modal-overlay">
+    <div class="modal-card">
+      <button class="modal-close" onclick="fecharModal('modalFormTi')"><i class="fas fa-times"></i></button>
+      <h3 style="color: var(--brand-blue); margin-bottom: 15px;"><i class="fas fa-shield-halved"></i> Preenchimento Interno T.I.</h3>
+      
+      <form onsubmit="salvarAtivoTi(event)">
+        <input type="hidden" id="ativoEditImei" />
+
+        <div style="display: flex; gap: 10px;">
+          <div class="form-group" style="flex: 1;">
+            <label>Área / Setor Solicitante *</label>
+            <input type="text" id="tiAreaSolicitante" placeholder="Ex: Tecnologia, DQS, Logística" required />
+          </div>
+          <div class="form-group" style="flex: 1;">
+            <label>Gerente da Área *</label>
+            <input type="text" id="tiGerenteArea" placeholder="Ex: Ricardo Santos" required />
+          </div>
         </div>
 
-        <div class="form-row">
-          <!-- QUANTIDADE -->
-          <div class="form-group">
-            <label>Quantidade *</label>
-            <input type="number" id="quantidade" min="1" value="1" required />
+        <div style="display: flex; gap: 10px;">
+          <div class="form-group" style="flex: 1;">
+            <label>Colaborador *</label>
+            <input type="text" id="tiColaborador" placeholder="Ex: Felipe Araújo" required />
           </div>
+          <div class="form-group" style="flex: 1;">
+            <label>E-mail Corporativo para VPN *</label>
+            <input type="email" id="tiEmailVpn" placeholder="felipe.vpn@empresa.com.br" required />
+          </div>
+        </div>
 
-          <div class="form-group">
-            <label>Categoria do Motivo *</label>
-            <select id="motivoCategoria" required>
-              <option value="Novo Colaborador / Expansão">Novo Colaborador / Expansão</option>
-              <option value="Substituição por Quebra / Avaria">Substituição por Quebra / Avaria</option>
-              <option value="Projetos / Novos Processos">Projetos / Novos Processos</option>
-              <option value="Outros Motivos Operacionais">Outros Motivos Operacionais</option>
+        <div style="display: flex; gap: 10px;">
+          <div class="form-group" style="flex: 1;">
+            <label>VPN Ativa no Colaborador? *</label>
+            <select id="tiVpnStatus" required>
+              <option value="SIM">Sim (VPN Ativa)</option>
+              <option value="NÃO">Não (Inativa / Isento)</option>
             </select>
           </div>
+          <div class="form-group" style="flex: 1;">
+            <label>Modelo do Aparelho *</label>
+            <input type="text" id="tiModeloAparelho" placeholder="Ex: Apple iPhone 17 / Zebra TC21" required />
+          </div>
         </div>
 
-        <!-- MOTIVO CLARO DA SOLICITAÇÃO -->
+        <div style="display: flex; gap: 10px;">
+          <div class="form-group" style="flex: 1;">
+            <label>Código IMEI (15 dígitos) *</label>
+            <input type="text" id="tiImei" placeholder="Ex: 863920194820194" required />
+          </div>
+          <div class="form-group" style="flex: 1;">
+            <label>Política Aplicada *</label>
+            <input type="text" id="tiPolitica" placeholder="Ex: MDM Corporativo / Kiosk Mode" required />
+          </div>
+        </div>
+
         <div class="form-group">
-          <label>Motivo Claro da Solicitação (Justificativa) *</label>
-          <textarea id="motivoClaro" rows="3" placeholder="Explique claramente o motivo (Ex: Aumento da demanda no 3º turno exigindo coletores extras)." required></textarea>
+          <label>Centro de Distribuição (CD) *</label>
+          <select id="tiCdSelect" required>
+            <!-- Preenchido via JS -->
+          </select>
         </div>
 
-        <div class="form-group">
-          <label>Softwares, Perfis e Observações Adicionais</label>
-          <textarea id="observacoes" rows="2" placeholder="Ex: Necessário WMS, Teams e perfil liberado."></textarea>
-        </div>
-
-        <button type="submit" class="btn-magalu">
-          <i class="fas fa-paper-plane"></i> Finalizar & Enviar Solicitação
+        <button type="submit" class="btn-primary" style="width: 100%; justify-content: center; margin-top: 10px;">
+          <i class="fas fa-save"></i> Gravar Informações no Painel
         </button>
       </form>
     </div>
   </div>
 
-  <!-- MODAL: LOGIN DE GESTÃO (DQS, CTE, CSC, ADMIN) -->
-  <div id="modalLogin" class="modal-overlay">
-    <div class="modal-card" style="max-width: 400px; text-align: center;">
-      <button class="modal-close" onclick="fecharModalLogin()"><i class="fas fa-times"></i></button>
-      <h3 style="color: var(--magalu-blue); margin-bottom: 5px;">magalu.</h3>
-      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">Acesso Restrito às Equipes de Gestão do Fluxo</p>
-      
-      <form onsubmit="autenticar(event)">
+  <!-- MODAL: CRIAR CD -->
+  <div id="modalCd" class="modal-overlay">
+    <div class="modal-card" style="max-width: 500px;">
+      <button class="modal-close" onclick="fecharModal('modalCd')"><i class="fas fa-times"></i></button>
+      <h3 style="color: var(--brand-blue); margin-bottom: 15px;">Cadastrar Novo Centro de Distribuição (CD)</h3>
+      <form onsubmit="salvarCd(event)">
         <div class="form-group">
-          <label>E-mail Corporativo</label>
-          <input type="email" id="loginEmail" placeholder="seu.setor@magazineluiza.com.br" required />
+          <label>Código do CD *</label>
+          <input type="text" id="cdCodigoInput" placeholder="Ex: CD 300, CD 500, CD 900" required />
         </div>
         <div class="form-group">
-          <label>Senha de Acesso</label>
-          <input type="password" id="loginSenha" placeholder="••••••••" required />
+          <label>Localidade / Cidade - Estado *</label>
+          <input type="text" id="cdLocalidadeInput" placeholder="Ex: Louveira - SP / Franco da Rocha - SP" required />
         </div>
-        <button type="submit" class="btn-magalu" style="padding: 12px;"><i class="fas fa-sign-in-alt"></i> Entrar</button>
+        <button type="submit" class="btn-primary" style="width: 100%; justify-content: center;">Salvar CD</button>
       </form>
     </div>
   </div>
 
   <script>
-    const DB_KEY = 'chamados_imobilizacao_db';
-    let usuarioLogado = null;
-    let ultimoIdInserido = null;
-
-    const usuarios = [
-      { email: 'admin@magazineluiza.com.br', senha: 'admin123', perfil: 'admin', nome: 'Administrador TI' },
-      { email: 'dqs@magazineluiza.com.br', senha: 'dqs123', perfil: 'dqs', nome: 'Equipe DQS' },
-      { email: 'cte@magazineluiza.com.br', senha: 'cte123', perfil: 'cte', nome: 'Estoque / CTE' },
-      { email: 'csc@magazineluiza.com.br', senha: 'csc123', perfil: 'csc', nome: 'Central CSC' }
-    ];
+    const KEY_ATIVOS = 'db_ativos_vpn_ti_magalu';
+    const KEY_CD = 'db_cd_configuracao_somente';
+    let tiLogado = false;
 
     window.onload = function() {
-      carregarChamados();
+      carregarBaseInicial();
+      preencherSelectCd();
+      carregarPainel();
+      carregarCds();
     };
 
-    function abrirFormularioSolicitacao() {
-      document.getElementById('modalSolicitacao').style.display = 'flex';
-    }
+    function lerAtivos() { return JSON.parse(localStorage.getItem(KEY_ATIVOS) || '[]'); }
+    function salvarAtivos(d) { localStorage.setItem(KEY_ATIVOS, JSON.stringify(d)); }
 
-    function fecharModalSolicitacao() {
-      document.getElementById('modalSolicitacao').style.display = 'none';
-    }
+    function lerCD() { return JSON.parse(localStorage.getItem(KEY_CD) || '[]'); }
+    function salvarCD(d) { localStorage.setItem(KEY_CD, JSON.stringify(d)); }
 
-    function abrirModalLogin() {
-      document.getElementById('modalLogin').style.display = 'flex';
-    }
+    function carregarBaseInicial() {
+      if (lerCD().length === 0) {
+        salvarCD([{ codigo: "CD 300", localidade: "Louveira - SP" }]);
+      }
 
-    function fecharModalLogin() {
-      document.getElementById('modalLogin').style.display = 'none';
-    }
-
-    function autenticar(e) {
-      e.preventDefault();
-      const email = document.getElementById('loginEmail').value.trim();
-      const senha = document.getElementById('loginSenha').value.trim();
-
-      const user = usuarios.find(u => u.email.toLowerCase() === email.toLowerCase() && u.senha === senha);
-
-      if (user) {
-        iniciarSessao(user);
-        fecharModalLogin();
-      } else {
-        alert('Credenciais inválidas! Verifique e tente novamente.');
+      if (lerAtivos().length === 0) {
+        salvarAtivos([
+          { 
+            imei: "863920194820194", 
+            modelo: "Apple iPhone 17", 
+            colaborador: "Felipe Araújo", 
+            emailVpn: "felipe.araujo@empresa.com.br",
+            vpn: "SIM", 
+            areaSolicitante: "Tecnologia", 
+            gerenteArea: "Carlos Eduardo",
+            politica: "MDM Corporativo Padrão", 
+            cd: "CD 300", 
+            localidade: "Louveira - SP" 
+          }
+        ]);
       }
     }
 
-    function iniciarSessao(user) {
-      usuarioLogado = user;
+    function preencherSelectCd() {
+      const cds = lerCD();
+      const selectForm = document.getElementById('tiCdSelect');
+      selectForm.innerHTML = '';
+      cds.forEach(c => {
+        selectForm.innerHTML += `<option value="${c.codigo}">${c.codigo} (${c.localidade})</option>`;
+      });
+    }
 
-      const authArea = document.getElementById('authArea');
-      authArea.innerHTML = `
-        <div class="user-info">
-          <span><i class="fas fa-user-circle"></i> ${user.nome} (<strong>${user.perfil.toUpperCase()}</strong>)</span>
-          <button class="btn-logout" onclick="logout()"><i class="fas fa-power-off"></i> Sair</button>
-        </div>
-      `;
+    function mudarAba(aba) {
+      document.querySelectorAll('.view-pane').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
 
-      if (user.perfil === 'admin') {
-        document.getElementById('btnExportarCSV').style.display = 'inline-block';
-        document.getElementById('btnZerarBanco').style.display = 'inline-block';
-        document.getElementById('btnImportarJSON').style.display = 'inline-block';
+      if (aba === 'painel') {
+        document.getElementById('panePainel').classList.add('active');
+        document.getElementById('navPainel').classList.add('active');
+      } else if (aba === 'config') {
+        document.getElementById('paneConfig').classList.add('active');
+        document.getElementById('navConfig').classList.add('active');
       }
-
-      carregarChamados();
     }
 
-    function logout() {
-      usuarioLogado = null;
+    /* FILTROS DINÂMICOS POR ÁREA SOLICITANTE */
+    function atualizarFiltroAreaSolicitante() {
+      const ativos = lerAtivos();
+      const select = document.getElementById('filtroAreaSolicitante');
+      const valorAtual = select.value;
+      
+      const areasUnicas = [...new Set(ativos.map(x => x.areaSolicitante).filter(Boolean))];
+      
+      select.innerHTML = '<option value="todos">Todas as Áreas Solicitantes</option>';
+      areasUnicas.forEach(a => {
+        select.innerHTML += `<option value="${a}">${a}</option>`;
+      });
 
-      document.getElementById('authArea').innerHTML = `
-        <button class="btn-login-trigger" onclick="abrirModalLogin()">
-          <i class="fas fa-lock"></i> Área Restrita / Gestão
-        </button>
-      `;
-
-      document.getElementById('btnExportarCSV').style.display = 'none';
-      document.getElementById('btnZerarBanco').style.display = 'none';
-      document.getElementById('btnImportarJSON').style.display = 'none';
-
-      carregarChamados();
+      select.value = valorAtual;
     }
 
-    function lerBanco() {
-      const data = localStorage.getItem(DB_KEY);
-      return data ? JSON.parse(data) : [];
-    }
+    /* PAINEL DE ACOMPANHAMENTO DE ATIVOS */
+    function carregarPainel() {
+      atualizarFiltroAreaSolicitante();
+      const lista = lerAtivos();
+      const busca = (document.getElementById('buscaGeral').value || '').toLowerCase();
+      const filtroArea = document.getElementById('filtroAreaSolicitante').value;
+      const tbody = document.getElementById('tabelaPainelBody');
+      tbody.innerHTML = '';
 
-    function salvarBanco(dados) {
-      localStorage.setItem(DB_KEY, JSON.stringify(dados));
-    }
+      const filtrados = lista.filter(i => {
+        const atendeBusca = i.imei.toLowerCase().includes(busca) || 
+                            i.modelo.toLowerCase().includes(busca) || 
+                            i.colaborador.toLowerCase().includes(busca) ||
+                            (i.emailVpn || '').toLowerCase().includes(busca) ||
+                            (i.gerenteArea || '').toLowerCase().includes(busca) ||
+                            i.politica.toLowerCase().includes(busca) ||
+                            (i.cd || '').toLowerCase().includes(busca);
+        const atendeArea = (filtroArea === 'todos') || (i.areaSolicitante === filtroArea);
+        return atendeBusca && atendeArea;
+      });
 
-    function enviarSolicitacao(e) {
-      e.preventDefault();
-
-      const solicitante = document.getElementById('solicitante').value.trim();
-      const setor = document.getElementById('setor').value.trim();
-      const descricaoItem = document.getElementById('descricaoItem').value.trim();
-      const quantidade = document.getElementById('quantidade').value;
-      const motivoCategoria = document.getElementById('motivoCategoria').value;
-      const motivoClaro = document.getElementById('motivoClaro').value.trim();
-      const observacoes = document.getElementById('observacoes').value.trim();
-
-      if (!solicitante || !setor || !descricaoItem || !quantidade || !motivoClaro) {
-        return alert("Preencha todos os campos obrigatórios (*)");
-      }
-
-      const banco = lerBanco();
-      const novoId = "IMO-" + Math.floor(100000 + Math.random() * 900000);
-
-      const novoChamado = {
-        id: novoId,
-        dataAbertura: new Date().toLocaleString('pt-BR'),
-        solicitante,
-        setor,
-        descricaoItem,
-        quantidade,
-        motivoCategoria,
-        motivoClaro,
-        observacoes,
-        status: "1. Solicitação Criada (Aguardando Análise DQS)",
-        listaDQS: "",
-        aparelhosEscolhidos: "",
-        numPedido: "",
-        atualizadoPor: usuarioLogado ? usuarioLogado.nome : solicitante
-      };
-
-      banco.unshift(novoChamado);
-      salvarBanco(banco);
-
-      ultimoIdInserido = novoId;
-
-      // Limpa os campos
-      document.getElementById('solicitante').value = '';
-      document.getElementById('setor').value = '';
-      document.getElementById('descricaoItem').value = '';
-      document.getElementById('motivoClaro').value = '';
-      document.getElementById('observacoes').value = '';
-
-      fecharModalSolicitacao();
-      alert(`✅ Solicitação ${novoId} aberta com sucesso!`);
-      carregarChamados();
-    }
-
-    function carregarChamados() {
-      const lista = lerBanco();
-      renderizar(lista);
-    }
-
-    function renderizar(lista) {
-      const cont = document.getElementById('lista-chamados');
-      cont.innerHTML = '';
-
-      if (lista.length === 0) {
-        cont.innerHTML = '<p style="color: var(--text-muted); font-size: 13px;">Nenhuma solicitação cadastrada no momento.</p>';
+      if (!filtrados.length) {
+        tbody.innerHTML = '<tr><td colspan="10" style="text-align:center; padding:20px; color:var(--text-muted);">Nenhum ativo localizado.</td></tr>';
         return;
       }
 
-      lista.forEach(item => {
-        const row = document.createElement('div');
-        row.className = 'item-row' + (item.id === ultimoIdInserido ? ' highlight' : '');
-        row.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <strong>${item.id} - ${item.solicitante} (${item.setor || 'Geral'})</strong>
-            <span class="status-badge">${item.status}</span>
-          </div>
-          <p style="font-size: 12px; color: var(--text-muted); margin-top: 8px;">
-            <span class="info-tag">Item: ${item.descricaoItem || 'Não especificado'}</span>
-            <span class="info-tag">Qtd: ${item.quantidade || '1'} UN</span>
-            <span class="info-tag">Categoria: ${item.motivoCategoria || 'Operacional'}</span>
-          </p>
-          <p style="font-size: 12px; color: #334155; margin-top: 6px;"><strong>Motivo Claro:</strong> ${item.motivoClaro || 'Não informado'}</p>
-          ${item.observacoes ? `<p style="font-size: 11px; color: #64748b; margin-top: 4px;"><strong>Softwares/Obs:</strong> ${item.observacoes}</p>` : ''}
-          ${item.listaDQS ? `<p style="font-size: 11px; color: #0284c7; margin-top:4px;"><strong>Disp. DQS:</strong> ${item.listaDQS}</p>` : ''}
-          ${item.aparelhosEscolhidos ? `<p style="font-size: 11px; color: #16a34a; margin-top:4px;"><strong>Escolhidos:</strong> ${item.aparelhosEscolhidos}</p>` : ''}
-          ${item.numPedido ? `<p style="font-size: 11px; color: #d97706; margin-top:4px;"><strong>Nº Pedido BAAP:</strong> ${item.numPedido}</p>` : ''}
-          
-          <div class="actions">
-            ${obterBotoesAcao(item)}
+      filtrados.forEach(item => {
+        const badgeVpn = item.vpn === 'SIM' ? 
+          '<span class="badge-vpn-ativa"><i class="fas fa-check"></i> Ativa</span>' : 
+          '<span class="badge-vpn-inativa"><i class="fas fa-times"></i> Inativa</span>';
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${item.imei}</strong></td>
+          <td>${item.modelo}</td>
+          <td>${item.colaborador}</td>
+          <td><small style="font-weight:600; color:var(--text-muted);">${item.emailVpn || 'N/A'}</small></td>
+          <td>${badgeVpn}</td>
+          <td><strong style="color:var(--brand-blue);">${item.areaSolicitante}</strong></td>
+          <td>${item.gerenteArea || 'N/A'}</td>
+          <td>${item.politica}</td>
+          <td><span class="badge-cd">${item.cd || 'CD 300'}</span></td>
+          <td style="text-align:right;">
+            <button style="background:none; border:none; color:var(--brand-blue); cursor:pointer; margin-right:8px;" title="Editar" onclick="editarAtivoTi('${item.imei}')">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button style="background:none; border:none; color:#ef4444; cursor:pointer;" title="Excluir" onclick="excluirAtivoTi('${item.imei}')">
+              <i class="fas fa-trash"></i>
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    /* FORMULÁRIO EXCLUSIVO DO T.I. */
+    function abrirModalFormularioTi() {
+      if (!tiLogado) return alertAcesso();
+      preencherSelectCd();
+      document.getElementById('ativoEditImei').value = '';
+      document.getElementById('tiAreaSolicitante').value = '';
+      document.getElementById('tiGerenteArea').value = '';
+      document.getElementById('tiColaborador').value = '';
+      document.getElementById('tiEmailVpn').value = '';
+      document.getElementById('tiVpnStatus').value = 'SIM';
+      document.getElementById('tiModeloAparelho').value = '';
+      document.getElementById('tiImei').value = '';
+      document.getElementById('tiPolitica').value = '';
+      abrirModal('modalFormTi');
+    }
+
+    function editarAtivoTi(imeiTarget) {
+      if (!tiLogado) return alertAcesso();
+      preencherSelectCd();
+      const item = lerAtivos().find(x => x.imei === imeiTarget);
+      if (!item) return;
+
+      document.getElementById('ativoEditImei').value = item.imei;
+      document.getElementById('tiAreaSolicitante').value = item.areaSolicitante;
+      document.getElementById('tiGerenteArea').value = item.gerenteArea || '';
+      document.getElementById('tiColaborador').value = item.colaborador;
+      document.getElementById('tiEmailVpn').value = item.emailVpn || '';
+      document.getElementById('tiVpnStatus').value = item.vpn;
+      document.getElementById('tiModeloAparelho').value = item.modelo;
+      document.getElementById('tiImei').value = item.imei;
+      document.getElementById('tiPolitica').value = item.politica;
+      document.getElementById('tiCdSelect').value = item.cd || 'CD 300';
+
+      abrirModal('modalFormTi');
+    }
+
+    function salvarAtivoTi(e) {
+      e.preventDefault();
+      if (!tiLogado) return alertAcesso();
+
+      const editImei = document.getElementById('ativoEditImei').value;
+      const imeiCode = document.getElementById('tiImei').value.trim();
+      const cdCodigo = document.getElementById('tiCdSelect').value;
+      const cdObj = lerCD().find(x => x.codigo === cdCodigo) || { localidade: 'Louveira - SP' };
+
+      let ativos = lerAtivos();
+
+      if (!editImei && ativos.some(x => x.imei === imeiCode)) {
+        return alert('Este IMEI já se encontra cadastrado no painel.');
+      }
+
+      const registro = {
+        areaSolicitante: document.getElementById('tiAreaSolicitante').value.trim(),
+        gerenteArea: document.getElementById('tiGerenteArea').value.trim(),
+        colaborador: document.getElementById('tiColaborador').value.trim(),
+        emailVpn: document.getElementById('tiEmailVpn').value.trim().toLowerCase(),
+        vpn: document.getElementById('tiVpnStatus').value,
+        modelo: document.getElementById('tiModeloAparelho').value.trim(),
+        imei: imeiCode,
+        politica: document.getElementById('tiPolitica').value.trim(),
+        cd: cdCodigo,
+        localidade: cdObj.localidade
+      };
+
+      if (editImei) {
+        const index = ativos.findIndex(x => x.imei === editImei);
+        if (index !== -1) ativos[index] = registro;
+      } else {
+        ativos.unshift(registro);
+      }
+
+      salvarAtivos(ativos);
+      fecharModal('modalFormTi');
+      carregarPainel();
+      alert('✅ Informações gravadas com sucesso no painel de acompanhamento!');
+    }
+
+    function excluirAtivoTi(imei) {
+      if (!tiLogado) return alertAcesso();
+      if (confirm(`Deseja remover o ativo com IMEI ${imei}?`)) {
+        salvarAtivos(lerAtivos().filter(x => x.imei !== imei));
+        carregarPainel();
+      }
+    }
+
+    /* CONFIGURAÇÃO DE CDs */
+    function carregarCds() {
+      const lista = lerCD();
+      const busca = (document.getElementById('buscaCd').value || '').toLowerCase();
+      const tbody = document.getElementById('tabelaCdBody');
+      tbody.innerHTML = '';
+
+      const filtrados = lista.filter(c => c.codigo.toLowerCase().includes(busca) || c.localidade.toLowerCase().includes(busca));
+
+      if (!filtrados.length) {
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:20px; color:var(--text-muted);">Nenhum CD cadastrado.</td></tr>';
+        return;
+      }
+
+      filtrados.forEach(item => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${item.codigo}</strong></td>
+          <td>${item.localidade}</td>
+          <td style="text-align:right;">
+            <button style="background:none; border:none; color:#ef4444; cursor:pointer;" onclick="excluirCd('${item.codigo}')">
+              <i class="fas fa-trash"></i>
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function novoCdModal() {
+      if (!tiLogado) return alertAcesso();
+      document.getElementById('cdCodigoInput').value = '';
+      document.getElementById('cdLocalidadeInput').value = '';
+      abrirModal('modalCd');
+    }
+
+    function salvarCd(e) {
+      e.preventDefault();
+      if (!tiLogado) return alertAcesso();
+
+      const cds = lerCD();
+      const codigo = document.getElementById('cdCodigoInput').value.trim();
+      const localidade = document.getElementById('cdLocalidadeInput').value.trim();
+
+      if (cds.some(x => x.codigo.toLowerCase() === codigo.toLowerCase())) {
+        return alert('Este Código de CD já está cadastrado.');
+      }
+
+      cds.unshift({ codigo, localidade });
+      salvarCD(cds);
+      preencherSelectCd();
+      fecharModal('modalCd');
+      carregarCds();
+      alert('✅ Novo Centro de Distribuição cadastrado!');
+    }
+
+    function excluirCd(codigo) {
+      if (!tiLogado) return alertAcesso();
+      if (lerCD().length <= 1) return alert('É necessário manter pelo menos 1 CD ativo no sistema.');
+      
+      if (confirm(`Excluir o ${codigo}?`)) {
+        salvarCD(lerCD().filter(x => x.codigo !== codigo));
+        preencherSelectCd();
+        carregarCds();
+      }
+    }
+
+    /* AUTENTICAÇÃO RÍGIDA DO T.I. & LOGOUT */
+    function autenticarTi(e) {
+      e.preventDefault();
+      const user = document.getElementById('tiUser').value.trim();
+      const pass = document.getElementById('tiPass').value.trim();
+
+      if (user === 'Admin.T.I' && pass === 'Magazine 2026#') {
+        tiLogado = true;
+        atualizarBarraLogin();
+        fecharModal('modalLogin');
+        alert('Autenticação T.I. realizada com sucesso!');
+      } else {
+        alert('Credenciais inválidas! Usuário ou Senha incorretos.');
+      }
+    }
+
+    function encerrarSessaoTi() {
+      tiLogado = false;
+      atualizarBarraLogin();
+      alert('🔒 Sessão do Admin.T.I encerrada com sucesso.');
+    }
+
+    function atualizarBarraLogin() {
+      const container = document.getElementById('authStatus');
+      if (tiLogado) {
+        container.innerHTML = `
+          <div style="display: flex; align-items: center;">
+            <span style="font-size:12px; font-weight:700; color:#10b981;">
+              <i class="fas fa-user-check"></i> Admin.T.I Logado
+            </span>
+            <button class="btn-logout" onclick="encerrarSessaoTi()" title="Encerrar Sessão">
+              <i class="fas fa-power-off"></i> Sair
+            </button>
           </div>
         `;
-        cont.appendChild(row);
-      });
-    }
-
-    function obterBotoesAcao(item) {
-      if (!usuarioLogado) return '';
-
-      let html = '';
-      const st = item.status;
-      const perf = usuarioLogado.perfil;
-
-      if (perf === 'dqs' || perf === 'admin') {
-        if (st.startsWith("1.")) html += `<button class="btn-action" onclick="avancar('${item.id}', '2. Solicitação Recebida (Verificando Estoque)')">DQS: Confirmar Recebimento</button>`;
-        else if (st.startsWith("2.")) html += `<button class="btn-action" onclick="enviarListaDQS('${item.id}')">DQS: Informar Itens Disponíveis</button>`;
-        else if (st.startsWith("3.") && perf === 'admin') html += `<button class="btn-action" onclick="selecionarAparelhos('${item.id}')">Solicitante: Escolher Aparelhos</button>`;
-        else if (st.startsWith("4.")) html += `<button class="btn-action" onclick="avancar('${item.id}', '5. Transferência de Saldo Confirmada ao Estoque')">DQS: Confirmar Transf. Saldo</button>`;
-        else if (st.startsWith("10.") && perf === 'admin') html += `<button class="btn-action" onclick="avancar('${item.id}', '11. Retirado pelo T.I. (Em Configuração)')">T.I.: Confirmar Retirada & Iniciar Config.</button>`;
-        else if (st.startsWith("11.") && perf === 'admin') html += `<button class="btn-action" onclick="avancar('${item.id}', '12. Configurado (Disponível para Retirada Final)')">T.I.: Finalizar Configuração</button>`;
-      }
-
-      if (perf === 'cte' || perf === 'admin') {
-        if (st.startsWith("5.")) html += `<button class="btn-action" onclick="avancar('${item.id}', '6. Saldo Recebido & Aberta Solicitação no BAAP')">CTE: Saldo Recebido & Abrir BAAP</button>`;
-        else if (st.startsWith("8.")) html += `<button class="btn-action" onclick="avancar('${item.id}', '9. Pedido Recebido (Em Processo de Faturamento)')">CTE: Confirmar Pedido Recebido</button>`;
-        else if (st.startsWith("9.")) html += `<button class="btn-action" onclick="avancar('${item.id}', '10. Pedido Faturado (Disponível p/ Retirada no DQS pelo T.I.)')">CTE: Confirmar Faturamento</button>`;
-      }
-
-      if (perf === 'csc' || perf === 'admin') {
-        if (st.startsWith("6.")) html += `<button class="btn-action" onclick="avancar('${item.id}', '7. Solicitação Recebida (Gerando Pedido)')">CSC: Confirmar Recebimento</button>`;
-        else if (st.startsWith("7.")) html += `<button class="btn-action" onclick="informarPedidoCSC('${item.id}')">CSC: Enviar Pedido Gerado</button>`;
-      }
-
-      return html;
-    }
-
-    function atualizarStatus(id, novoStatus, campoExtra = '', valorExtra = '') {
-      const banco = lerBanco();
-      const item = banco.find(x => x.id === id);
-      if (item) {
-        item.status = novoStatus;
-        item.atualizadoPor = usuarioLogado.nome;
-        if (campoExtra && valorExtra) item[campoExtra] = valorExtra;
-        salvarBanco(banco);
-        carregarChamados();
+      } else {
+        container.innerHTML = `
+          <button class="btn-primary" onclick="abrirModalLogin()"><i class="fas fa-lock"></i> Login T.I.</button>
+        `;
       }
     }
 
-    function avancar(id, proximoStatus) {
-      atualizarStatus(id, proximoStatus);
+    function alertAcesso() {
+      alert('🔒 Acesso Negado! Somente o usuário Admin.T.I logado pode preencher/alterar informações.');
+      abrirModal('modalLogin');
     }
 
-    function enviarListaDQS(id) {
-      const texto = prompt("DQS: Liste os equipamentos/informações disponíveis:");
-      if (texto) atualizarStatus(id, "3. Lista de Disponibilidade Enviada pelo DQS", "listaDQS", texto);
-    }
-
-    function selecionarAparelhos(id) {
-      const texto = prompt("Solicitante: Digite os equipamentos de interesse escolhidos:");
-      if (texto) atualizarStatus(id, "4. Itens de Interesse Selecionados pela Área", "aparelhosEscolhidos", texto);
-    }
-
-    function informarPedidoCSC(id) {
-      const texto = prompt("CSC: Digite o Número do Pedido/BAAP Gerado:");
-      if (texto) atualizarStatus(id, "8. Pedido Emitido pelo CSC", "numPedido", texto);
-    }
-
-    function zerarBanco() {
-      if (usuarioLogado.perfil !== 'admin') return alert("Apenas o Administrador pode executar esta ação.");
-      if (confirm("⚠️ ATENÇÃO: Deseja REALMENTE apagar TODOS os chamados cadastrados?")) {
-        localStorage.removeItem(DB_KEY);
-        carregarChamados();
-        alert("O banco de dados foi completamente zerado!");
-      }
-    }
-
-    function exportarCSV() {
-      const banco = lerBanco();
-      if (banco.length === 0) return alert("Não há solicitações para exportar.");
-
-      let csv = "\uFEFF";
-      csv += "ID;Data Abertura;Solicitante;Setor;Descrição do Item;Quantidade;Categoria Motivo;Motivo Claro;Softwares/Obs;Status Atual;Disponibilidade DQS;Equipamentos Escolhidos;Nº Pedido BAAP;Última Atualização Por\n";
-
-      banco.forEach(item => {
-        csv += `"${item.id}";"${item.dataAbertura}";"${item.solicitante}";"${item.setor}";"${item.descricaoItem}";"${item.quantidade}";"${item.motivoCategoria}";"${item.motivoClaro}";"${item.observacoes}";"${item.status}";"${item.listaDQS}";"${item.aparelhosEscolhidos}";"${item.numPedido}";"${item.atualizadoPor}"\n`;
-      });
-
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.setAttribute('href', url);
-      link.setAttribute('download', `imobilizacoes_magalu_${new Date().toISOString().slice(0, 10)}.csv`);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-
-    function exportarJSON() {
-      const banco = lerBanco();
-      if (banco.length === 0) return alert("Não há chamados cadastrados para exportar.");
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(banco, null, 2));
-      const downloadAnchor = document.createElement('a');
-      downloadAnchor.setAttribute("href", dataStr);
-      downloadAnchor.setAttribute("download", `database_imobilizacao_${new Date().toISOString().slice(0,10)}.json`);
-      document.body.appendChild(downloadAnchor);
-      downloadAnchor.click();
-      downloadAnchor.remove();
-    }
-
-    function importarJSON(event) {
-      const fileReader = new FileReader();
-      fileReader.onload = function(e) {
-        try {
-          const dados = JSON.parse(e.target.result);
-          if (Array.isArray(dados)) {
-            salvarBanco(dados);
-            carregarChamados();
-            alert("Banco de Dados importado com sucesso!");
-          } else {
-            alert("O arquivo selecionado não é um JSON válido.");
-          }
-        } catch (err) {
-          alert("Erro ao ler o arquivo JSON.");
-        }
-      };
-      fileReader.readAsText(event.target.files[0]);
-    }
+    function abrirModal(id) { document.getElementById(id).style.display = 'flex'; }
+    function fecharModal(id) { document.getElementById(id).style.display = 'none'; }
+    function abrirModalLogin() { abrirModal('modalLogin'); }
   </script>
 </body>
 </html>
